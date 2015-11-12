@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>reveal.js – The HTML Presentation Framework</title>
+		<title>TDD - Where did it all go wrong?</title>
 
 		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
 		<meta name="author" content="Hakim El Hattab">
@@ -41,20 +41,354 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Reveal.js</h1>
-					<h3>The HTML Presentation Framework</h3>
+					<h1>TDD</h1>
+					<h3>Where did it all go wrong?</h3>
+					<br />
 					<p>
-						<small>Created by <a href="http://hakim.se">Hakim El Hattab</a> / <a href="http://twitter.com/hakimel">@hakimel</a></small>
+						<small>
+							Tom Davis<br />
+							Senior Software Engineer
+						</small>
+					</p>
+					<p>
+						<small>
+							@photomoose<br />
+							tom.davis@rumr.co.uk							
+						</small>
+					</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Introduce yourself.</li>
+							<li>Why I'm doing this talk.</li>
+							<li>Who writes unit tests now?</li>
+							<li>Who writes tests first?</li>
+							<li>What is the trigger for writing a new test?</li>
+						</ul>
+					</aside>					
+				</section>
+
+				<section data-autoslide="100">
+					<h2>Agenda</h2>
+					<ul>
+						<li class="fragment" data-autoslide="500">What are the problems?</li>
+						<li class="fragment" data-autoslide="500">Where does it go wrong?</li>
+						<li class="fragment" data-autoslide="500">TDD Revisted</li>
+						<li class="fragment" data-autoslide="500">Gears (Exploratory Testing)</li>
+						<li class="fragment" data-autoslide="500">Mocking</li>
+						<li class="fragment" data-autoslide="0">Ports & Adapters</li>
+					</ul>
+				</section>
+				
+				<section data-autoslide="5000">
+					<h2>What are the problems?</h2>
+					<p>A change to implementation details breaks the tests.</p>
+					
+					<span class="fragment" data-autoslide="0">Wasn't refactoring supposed to be a key phase of TDD?</span>
+					
+					<aside class="notes">
+						<ul>
+							<li>Small change results in a lot of test rework.</li>						
+							<li>Slows you down.</li>
+							<li>Reduces confidence in the tests (parachute analogy).</li>
+							<li>Less inclined to clean the code (Uncle Bob).</li>
+							<li>Can anyone relate to this?</li>								
+							<li>If the tests are broken, then in theory we are rewriting the code, not refactoring.</li>
+						</ul>
+					</aside>					
+				</section>				
+
+				<section data-autoslide="2000">
+					We seem to write more test code than implementation code.
+					<p>
+						<span class="fragment" data-autoslide="1500">This robs us of productivity...</span><br />
+						<span class="fragment" data-autoslide="0">...and becomes expensive to maintain.</span>
 					</p>
 				</section>
+				
+				<section>
+					When we return to tests, it is difficult to read and understand their intent.
+					<p>
+						<span class="fragment">Is the test broken because the behaviour has changed?</span><br />
+						<span class="fragment">Or is the implementation wrong?</span><br />
+						<span class="fragment">Where is the behaviour expressed?</span>
+					</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Tests littered with lambdas.</li>						
+							<li>Poorly named test names (e.g. XYZ Returns 43).</li>
+							<li>Story about Graeme Foster.</li>						
+						</ul>
+					</aside>					
+				</section>
+					
+				<section>
+					<h2>Where did it go wrong?</h2>
+					<p>We're writing tests against classes and methods rather than behaviours.</p>
+					<p>We're coupling our tests to our implementation details.</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Books show this method.</li>
+							<li>Dan North BDD identified this.</li>						
+							<li>Coupling because we don't really understand RGR / start with internals.</li>
+							<li>Fix both problems, tests are readable.</li>
+							<li>May reduce dependence on ATDD tools.</li>						
+						</ul>
+					</aside>						
+				</section>	
+				
+				<section>
+					<h2>TDD Revisited</h2>
+					<p>A unit test should test a unit of behaviour...<br />
+					...NOT the implementation details of a specific class/method/module.<p>
+					<p>Implementing a change in behaviour is the trigger to writing a new test...<br />
+					...NOT the creation of a new class or method.</p>		
+					
+					<aside class="notes">
+						<ul>
+							<li>Why tests are hard to read:</li>
+							<li>Done thinking in head, what do I need to do next?</li>						
+							<li>New class/method, express by writing a test.</li>
+							<li>Thinking process is skipped and not in code.</li>
+							<li>Behaviour lost.</li>						
+						</ul>								
+				</section>
+					
+				<section>
+					<blockquote>
+						<p>&ldquo;What behavior will we need to produce the revised report?</p>
+						<p>Put another way, what set of tests, when passed, will demonstrate the presence of code we are confident will compute the report correctly?</p>
+						<p>We need to be able to add amounts in two different currencies and convert the result given a set of exchange rates.</p>
+						<p>We need to be able to multiply an amount.&rdquo;</p>
+					</blockquote>
+				</section>
+				
+				<section>
+					<p>Unit tests should run in isolation from other tests.</p>
+					<p>It is not the thing under test that should be isolated.</p>
+					<p>Tests that target classes/methods are not TDD unit tests.</p>
+					<p>TDD unit tests focus on a use case or scenario.</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Important distinction. People talk about testing a module in isolation from other modules. BAD ADVICE.</li>						
+							<li>Isolation: when test runs, no side effects on other tests.</li>
+							<li>Isolate module, mock collaborators, test becomes over specified. Lots of setup. Breaks when implementation changes.</li>
+							<li>Rely on ATDD or manual tests to verify integration of classes.</li>						
+						</ul>					
+				</section>
+								
+				
+				<section>
+					<p>If we test outside-in (from the "port"), then our tests will cover the use cases.</p>
+					<p>Only write tests against the implementation details when you need to discover the implementation...<br />
+					...or think that they will be useful for other developers.</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Pinpoint tricky area on failure.</li>
+							<li>Gears - be prepared to delete tests.</li>		
+							<li>Who deletes tests? High score.</li>				
+						</ul>
+					</aside>				
+				</section>					
+					
+				<section>
+					<section>
+						<p>Do not test internals; write tests against the public API.</p>
+						<p>Use access modifiers to mark non API classes as internal.</p>
+						<p>This will give you a smaller surface area...<br />
+						...which will result in less, but more descriptive tests that express behaviour and intent.</p>
+						
+						<aside class="notes">
+							<ul>
+								<li>Seen lots of modules where internals are public. BCL/3rd party.</li>
+								<li>Imagine shipping module.</li>
+								<li>Tests against the internals couple tests.</li>
+								<li>Tests will break when the internals change.</li>		
+								<li>When you refactor, API remains the same, tests don't change.</li>				
+							</ul>
+						</aside>								
+					</section>
+					<section>
+						[assembly:InternalsVisibleTo("TightlyCoupledTests")]
+					</section>
+				</section> 	
 
 				<section>
-					<h2>Hello There</h2>
-					<p>
-						reveal.js enables you to create beautiful interactive slide decks using HTML. This presentation will show you examples of what it can do.
-					</p>
+					<p>Unit tests should drive the development of a new behaviours, indicating when the implementation is correct.</p>
+					<p>They should not be used as traps to prevent the next developer from making changes to the implementation.</p>
 				</section>
-
+								
+				<section>
+					<h2>Red</h2>
+					<p>Write a failing test which expresses the desired behaviour.</p>
+					<p>There are no tests for tests; a failing test proves the test works.</p>
+					<p>Prevents false positives when there is a failure condition.</p> 
+					<aside class="notes">
+						<ul>
+							<li>No tests for tests.</li>
+							<li>Proves test works.</li>		
+							<li>Prevents false positives when there is a failure condition.</li>				
+						</ul>
+					</aside>							
+				</section>
+				
+				<section>
+					<h2>Green</h2>
+					<p>Write quick and dirty implementation code to pass the test.</p>
+					<p>Do not think about good engineering practices, such as design patterns, SOLID or clean code.</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Copy & paste from SO.</li>
+							<li>Write 400 lines of procedural code.</li>
+							<li>Difficult to do two things at once.</li>
+							<li>You're thinking about the solution and the design.</li>		
+							<li>The design may not be right for the solution.</li>
+							<li>Skip the hacking and you don't see result of next step.</li>				
+						</ul>
+					</aside>							
+				</section>
+								
+				<section>
+					<h2>Refactor</h2>
+					<p>Remove code duplication and code smells.</p>
+					<p>Refactor code to produce clean code, introduce design patterns, SOLID principles, etc.</p>
+					<p>Perform good engineering at this point.</p>
+					<p>Do NOT write new tests!</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>No new public classes, extract internal classes.</li>		
+							<li>Tests against API protect the extracted classes.</li>
+							<li>Code coverage tool.</li>
+							<li>Lines not covered indicate new behaviour. "If" statement.</li>
+							<li>New tests here = coupling. Coupling biggest problem in software.</li>
+							<li>Internals express HOW we implement the API. Not how the API behaves.</li>
+							<li>Danger of design in Green is it might not work, reluctant to throw away design, munge fix.</li> 				
+						</ul>
+					</aside>							
+				</section>
+				  	
+				
+				<section>
+					<h2>Gears</h2>
+					<p>Sometimes it's tricky...<br />
+					...you might want to write tests to guide your internal classes to the solution.</p>
+					<p>This is OK...<br />
+					...but consider deleting them once you go green.</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>5th: you know solution well, one liner.</li>		
+							<li>3rd/4th: require refactoring once you go green.</li>
+							<li>Delete: hang around, remain coupled, others will be too scared to remove them.</li>
+							<li>New devs will think that is how to write tests.</li>
+							<li>But if they will help someone, keep them.</li>			
+						</ul>
+					</aside>						
+				</section>
+					
+				<section>
+					<blockquote>
+						<p>&ldquo;Never delete a test if it reduces your confidence in the behaviour of the system.&rdquo;</p>
+					</blockquote>				
+				</section>
+					
+				<section>
+					<h2>Ports & Adapters</h2>
+					<blockquote>
+					&ldquo;Allow an application to equally be driven by users, programs, automated test or batch scripts, and to be developed and tested in isolation from its eventual runtime devices and databases.&rdquo;
+					</blockquote>					
+				</section>
+				
+				<section>
+					<p>[Diagram of Ports & Adapters]</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Describe diagram</li>
+							<li>Centre: domain model, POCO. Technology agnostic.</li>		
+							<li>Perimeter: ports, expose domain model to outside world.</li>
+							<li>Adapters: how we communicate with users/services/3rd parties/DBs. (e.g. repositories)</li>
+	
+						</ul>
+					</aside>					
+				</section>
+				
+				<section>
+					<p>[Diagram of Ports]</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Use case boundary. Behaviour boundary.</li>		
+							<li>Where stories are expressed.</li>		
+							<li>This is the public API, and the contract to the outside world.</li>
+							<li>Outbound/inbound. Database/GUI.</li>
+							<li>Unit tests target ports, drive application.</li>							
+							<li>Tests are just another adapter.</li>
+						</ul>
+					</aside>					
+				</section>				
+				
+				<section>
+					<p>[Diagram of Adapters]</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Implementation of port interface.</li>		
+							<li>Technology specific (e.g. SQL, Email, Websockets, ATOM, HTTP, GUI).</li>		
+							<li>Do not write unit tests.</li>
+							<li>Integration tests confirm hookup to port.</li>
+							<li>Tests ensure we are expressing ourselves to the outside world correctly.</li>							
+						</ul>
+					</aside>					
+				</section>	
+				
+				<section>
+					<p>[Diagram of System Tests]</p>
+					
+					<aside class="notes">
+						<ul>
+							<li>Target the boundary.</li>		
+							<li>Ensure everything works and is ready for deployment.</li>		
+							<li>Run slower. Shared state makes them difficult to write.</li>
+							<li>Expensive tests. Top of testing pyramid.</li>
+						</ul>
+					</aside>					
+				</section>					
+								
+				<section>
+					<h2>Mocking</h2>
+					<p>Mock objects couple tests to implementation details.</p>
+					<p>Their use can make tests hard to read.</p>
+					<p>[Example of mock overuse]</p>
+				</section>
+				
+				<section>
+					<p>Try not to mock internal collaborators.</p>
+					<p>Mock objects at the application boundary (the "adapters") or objects that:</p>
+					
+					<p>...produce non-deterministic results (e.g. time),<br />
+					...return states that are difficult to reproduce (e.g. network errors)<br />
+					...are slow to execute (e.g. database)</p>					
+				</section>
+				
+				<section>
+					<blockquote cite="https://en.wikipedia.org/wiki/Mock_object">
+					&ldquo;Over-use of mock objects as part of a suite of unit tests can result in a dramatic increase in the amount of maintenance that needs to be performed on the tests themselves during system evolution as refactoring takes place.&rdquo;
+					</blockquote>									
+				</section>
+				
+				<section>
+					<blockquote cite="https://en.wikipedia.org/wiki/Mock_object">
+					&ldquo;If the behavior is not modelled correctly then the unit tests may register a pass even though a failure would occur at run time under the same conditions that the unit test is exercising, thus rendering the unit test inaccurate.&rdquo;
+					</blockquote>									
+				</section>				
+						
 				<!-- Example of nested vertical slides -->
 				<section>
 					<section>
