@@ -814,7 +814,7 @@
 			// rgba(0,0,0,0) when reading the computed background color of
 			// an element with no background
 			if( rgb && rgb.a !== 0 ) {
-				if( colorBrightness( computedBackgroundColor ) < 128 ) {
+				if( colorBrightness( computedBackgroundColor ) < 175 ) {
 					slide.classList.add( 'has-dark-background' );
 				}
 				else {
