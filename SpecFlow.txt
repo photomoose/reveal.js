@@ -1,0 +1,38 @@
+Scenario Outline: Display of currency dropdown, available currency Text and currency Id
+Given I am on the <site> website
+When the currency dropdown is displayed
+Then the currency dropdown is displayed with currency text <currencyText>
+And the currency dropdown is displayed with currency id <currencyid>
+
+Examples: 
+| site | currencyText	| currencyid |
+| UK   | £ GBP          | 1          |
+| UK   | $ USD          | 2          |
+| UK   | C$ CAD         | 3          |
+| UK   | kr SEK         | 8          |
+| UK   | kr NOK         | 9          |
+| UK   | ₣ CHF          | 10         |
+| UK   | € EUR          | 14         |
+| UK   | $ AUD          | 19         |
+| UK   | ¥ RMB          | 21         |
+| UK   | $ HKD          | 10021      |
+| UK   | $ NZD          | 10042      |
+| UK   | $ SGD          | 10064      |
+| UK   | NT$ TWD        | 10078      |
+| UK   | руб. RUB       | 10085      |
+
+
+
+
+
+Scenario Outline: When currency is updated the currency text, id and cookies is set correctly
+Given I am on the <site> website
+When I update the currency to <currencyText>
+Then the currency label is displayed with currency text <currencyText>
+And the asos cookie should be set with currencyid as <currencyid>
+And the asos cookie should be set with currencylabel as <currencylabel>
+
+Examples: 
+| site | currencyText | currencyid | currencylabel |
+| UK   | $ NZD        | 10064      | NZD           |
+| UK   | $ USD        | 2          | USD           |

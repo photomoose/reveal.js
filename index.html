@@ -146,8 +146,9 @@
 										
 					<aside class="notes">
 						<ul>
+							<li>Anyone read TDD book? Learnt from other book/colleagues?</li>
+							<li>Books introduce misunderstandings.</li>
 							<li>Dan North BDD identified this.</li>													
-							<li>Books show this method.</li>
 							<li>Coupling because we don't understand RGR / start with internals (overuse of mocking) / isolation.</li>
 							<li>Fix issues then tests will be readable and allow refactoring.</li>							
 							<li>May reduce dependence on ATDD tools.</li>						
@@ -179,6 +180,10 @@
 						<p>We need to be able to add amounts in two different currencies and convert the result given a set of exchange rates.</p>
 						<p>We need to be able to multiply an amount.&rdquo;</p>
 					</blockquote>
+					
+					<aside class="notes">
+						The use cases are describing the API to create.
+					</aside>
 				</section>
 				
 				<section data-background="#369697" data-autoslide="1500">
@@ -191,45 +196,28 @@
 					<aside class="notes">
 						<ul>
 							<li>Isolation: when test runs, no side effects on other tests.</li>							
-							<li>Important distinction. People talk about testing a module in isolation from other modules. BAD ADVICE.</li>						
+							<li>Important distinction. People talk about testing a module in isolation from other modules. BAD ADVICE.</li>	
+							<li>Acceptable to test 5 classes or hit the DB.</li>					
 							<li>Isolate class, mock collaborators, test becomes over specified. Lots of setup. Breaks when implementation changes.</li>
 							<li>Rely on ATDD or manual tests to verify integration of classes.</li>						
 						</ul>					
 				</section>
 				
 					
-				<section data-background="#369697">
-					<section data-autoslide="3000">
-						<h4>Internals</h4>
-						<p>Tests should target the public API, NOT the internal classes.</p>
-						<p class="fragment">Use access modifiers to mark non API classes as internal.</p>
-						<p class="fragment" data-autoslide="0">This will give us a smaller surface area, resulting in less, but more descriptive tests that express behaviour and intent.</p>
-						
-						<aside class="notes">
-							<ul>
-								<li>Seen lots of modules where internals are public. BCL/3rd party.</li>
-								<li>Imagine shipping module.</li>
-								<li>Tests against the internals couple tests.</li>
-								<li>Tests will break when the internals change.</li>		
-								<li>When you refactor, API remains the same, tests don't change.</li>				
-							</ul>
-						</aside>								
-					</section>
-					<section>
-						<code>[assembly:InternalsVisibleTo("TightlyCoupledTests")]</code>
-					</section>
-				</section> 	
+
 
 				<section data-background="#369697" data-autoslide="1500">
 					<h4>Drive Development</h4>
 					<p>Unit tests should drive the development of new behaviour...<br />
-					<span class="fragment" data-autoslide="3000">...their purpose is to indicate when the implementation fulfils the expectations of the required behaviour.</span></p>
-					<p class="fragment" data-autoslide="0">They are not a mechanism to restrict the next developer from making changes to the implementation.</p>
+					<span class="fragment" data-autoslide="3000">...their purpose is to indicate when the implementation fulfils the required behaviour.</span></p>
+					<p class="fragment" data-autoslide="0">They should not restrict you from refactoring the implementation.</p>
 					
 					<aside class="notes">
 						<ul>
 							<li>When to stop.</li>
 							<li>Many ways to implement a solution. Tests shouldn't care how.</li>
+							<li>Defines the API.</li>
+							<li>Tests used as locks. No trust in peers.</li>
 						</ul>
 					</aside>
 				</section>
@@ -284,14 +272,36 @@
 						</ul>
 					</aside>							
 				</section>
-				  	
+				
+				<section data-background="#ff800d">
+					<section data-autoslide="3000">
+						<h4>Internals</h4>
+						<p>Tests should target the public API, NOT the internal classes.</p>
+						<p class="fragment">Use access modifiers to mark non API classes as internal.</p>
+						<p class="fragment" data-autoslide="0">This will give us a smaller surface area, resulting in less, but more descriptive tests that express behaviour and intent.</p>
+						
+						<aside class="notes">
+							<ul>
+								<li>What is the public API?.</li>
+								<li>Seen lots of modules where internals are public. BCL/3rd party.</li>
+								<li>Imagine shipping module.</li>
+								<li>Tests against the internals couple tests.</li>
+								<li>Tests will break when the internals change.</li>		
+								<li>When you refactor, API remains the same, tests don't change.</li>				
+							</ul>
+						</aside>								
+					</section>
+					<section>
+						<code>[assembly:InternalsVisibleTo("TightlyCoupledTests")]</code>
+					</section>
+				</section> 					  	
 				
 				<section data-background="#B39EB5" data-autoslide="1500">
 					<h2>Gears</h2>
 					<p>Sometimes it gets tricky...<br />
-					<span class="fragment" data-autoslide="3000">...you might want to write tests to guide your internal classes to the solution.</span></p>
+					<span class="fragment" data-autoslide="3000">...we might want to write tests to guide our internal classes to the solution.</span></p>
 					<p><span class="fragment" data-autoslide="1500">This is OK...</span><br />
-					<span class="fragment" data-autoslide="0">...but consider deleting them once you go green.</span></p>
+					<span class="fragment" data-autoslide="0">...but consider deleting them once we go green.</span></p>
 					
 					<aside class="notes">
 						<ul>
@@ -373,44 +383,80 @@
 					</aside>					
 				</section>					
 								
-				<section data-background="#FF7575" data-autoslide="3000">
+				<section data-background="#2897B7" data-autoslide="3000">
 					<h2>Mocking</h2>
 					<p>Do not mock internal collaborators.</p>
-					<p class="fragment">Mock objects outside of the application boundary (the "adapters") or objects that:</p>
+					<p class="fragment">Mock objects outside of the application boundary.</p>
 					
-					<p><span class="fragment" data-autoslide="1500">...produce non-deterministic results (e.g. time),</span><br />
-					<span class="fragment" data-autoslide="1500">...return states that are difficult to reproduce (e.g. network errors)</span><br />
-					<span class="fragment" data-autoslide="0">...are slow to execute (e.g. database)</span></p>
+					<p><span class="fragment" data-autoslide="1500">These typically produce non-deterministic results...</span><br />
+					<span class="fragment" data-autoslide="1500">...return states that are difficult to reproduce...</span><br />
+					<span class="fragment" data-autoslide="1500">...or are slow to execute (e.g. database)</span></p>
+					<p class="fragment" data-autoslide="0">Mock ports that are covered by other tests.<p>
 				</section>
 				
-				<section data-background="#FF7575" data-autoslide="3000">
+				<section data-background="#2897B7" data-autoslide="3000">
 					<p>Mocks couple tests to implementation details.</p>
 					<p class="fragment" data-autoslide="3000">Their use can make tests hard to read.</p>
-					<p class="fragment" data-autoslide="0">When implementation details change, the mocked behaviour needs to change.</p>
-					<p>[Example of mock overuse]</p>					
+					<p class="fragment" data-autoslide="0">When implementation details change, the mocked behaviour needs to change.</p>				
 				</section>
 				
-				<section data-background="#FF7575">
+				<section data-background="#2897B7">
+					<pre>
+[Test]
+public void When_Build_Is_Called_Behaviour_Is_Correct()
+{
+  _viewModelBuilder.Build(_keysToImport);
+  
+  _mockFactory.Verify(x => x.Importers(_keysToImport), Times.Once());
+  _contentService
+	.Verify(x=>x.GetHtmlContent(_importer.Object.Key), Times.Once());
+  _parser.Verify(x => x.Parse(null), Times.Once());
+  _importer.Verify(x=> x.Import(_legacyContent), Times.Once());
+  _logger
+    .Verify(x => x.Info("Import of legacy html content: " + MiniBagKey + " successful"), Times.Once());
+}
+		</pre>
+				</section>
+				
+				<section data-background="#2897B7">
 					<blockquote cite="https://en.wikipedia.org/wiki/Mock_object">
 					&ldquo;Over-use of mock objects as part of a suite of unit tests can result in a dramatic increase in the amount of maintenance that needs to be performed on the tests themselves during system evolution as refactoring takes place.&rdquo;
 					</blockquote>									
 				</section>
 				
-				<section data-background="#FF7575">
+				<section data-background="#2897B7">
 					<blockquote cite="https://en.wikipedia.org/wiki/Mock_object">
 					&ldquo;If the behavior is not modelled correctly then the unit tests may register a pass even though a failure would occur at run time under the same conditions that the unit test is exercising, thus rendering the unit test inaccurate.&rdquo;
 					</blockquote>									
 				</section>				
 						
-				<section data-background="#FF7575">
-					<p><img src="mocks.svg" /></p>								
+				<section data-background="#2897B7">
+					<p><img src="mocks.svg" /></p>
+					<aside class="notes">
+						No peering behind the curtain.
+					</aside>							
 				</section>	
 										
-				<section>
+				<section data-background="#800080" data-autoslide="3000">
 					<h2>Summary</h2>
+					<p>Test a new behaviour, not a new class or method.</p>
+					<p span class="fragment" data-autoslide="3000">Write dirty code to pass the test, then refactor.</p>
+					<p span class="fragment" data-autoslide="3000">Do not write tests for extracted classes/methods.</p>
+					<p span class="fragment" data-autoslide="3000">Develop and accept against tests written on a port.</p>
+					<p span class="fragment" data-autoslide="3000">Integration tests confirm hookup of ports to adapters.</p>
+					<p span class="fragment" data-autoslide="3000">System tests provide end-to-end confidence.</p>
+					<p span class="fragment" data-autoslide="0">Do not mock internals, privates or adapters.</p>
 				</section>
 				
-				<section>
+				<section data-background="#23819C">
+					<h2>Resources</h2>
+					<ul>
+						<li>Ian Cooper - <em>TDD: Where did it all go wrong?</em></li>
+						<li>Kent Beck - <em>Test Driven Development By Example</em></li>
+						<li>Alistair Cockburn - <em>Hexagonal Architecture</em></li>
+					</ul>
+				</section>
+				<section data-background="#9999FF">
 					<h2>Questions</h2>
 				</section>
 				
